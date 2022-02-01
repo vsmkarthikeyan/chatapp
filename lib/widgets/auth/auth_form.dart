@@ -41,6 +41,9 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  CircleAvatar(
+                    radius: 40,
+                  ),
                   TextFormField(
                     key: ValueKey('email'),
                     onSaved: (newValue) {
