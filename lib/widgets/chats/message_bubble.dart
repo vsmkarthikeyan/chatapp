@@ -56,8 +56,18 @@ class MessageBubble extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        Positioned(
+          top: -5,
+          left: isMe ? null : 1,
+          right: isMe ? 1 : null,
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(image_url),
+            radius: 20,
+          ),
         )
       ],
+      clipBehavior: Clip.none,
     );
   }
 }
