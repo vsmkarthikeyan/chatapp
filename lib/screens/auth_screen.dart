@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:chatapp/widgets/auth/auth_form.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -15,7 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
   var isLoading = false;
   void _submitAuthForm(String email, String username, String password,
-      bool isLogin, BuildContext ctx) async {
+      bool isLogin, File? image, BuildContext ctx) async {
     try {
       setState(() {
         isLoading = true;
@@ -26,12 +29,27 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         UserCredential userCredential = await auth
             .createUserWithEmailAndPassword(email: email, password: password);
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user?.uid)
-            .set({'username': username, 'email': email});
+
+        final firebase_storage.Reference ref = firebase_storage
+            .FirebaseStorage.instance
+            .ref()
+            .child('user_image')
+            .child(auth.currentUser!.uid.toString() + '.jpg');
+        var task = await ref.putFile(image!);
+        if (task.state == firebase_storage.TaskState.success) {
+          var imageurl = await ref.getDownloadURL();
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userCredential.user?.uid)
+              .set({
+            'username': username,
+            'email': email,
+            'image_url': imageurl
+          });
+        }
       }
     } on PlatformException catch (e) {
+      print(e);
       Scaffold.of(ctx).showSnackBar(
         SnackBar(
           content: Text(
@@ -44,14 +62,12 @@ class _AuthScreenState extends State<AuthScreen> {
         isLoading = false;
       });
     } catch (error) {
+      print(error);
+    } finally {
       setState(() {
         isLoading = false;
       });
-      print(error);
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override

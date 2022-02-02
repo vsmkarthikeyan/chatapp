@@ -40,9 +40,11 @@ class _messagesState extends State<messages> {
                   itemBuilder: (ctx, index) {
                     print(documents![index]['text']);
                     return MessageBubble(
-                        documents![index]['text'],
-                        documents[index]['userName'],
-                        documents[index]['userId'] == futureSnapshot.data?.uid);
+                      documents![index]['text'],
+                      documents[index]['userName'],
+                      documents[index]['userId'] == futureSnapshot.data?.uid,
+                      documents[index]['imageUrl'],
+                    );
                   });
             },
           );

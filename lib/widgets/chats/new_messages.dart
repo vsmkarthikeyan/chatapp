@@ -46,7 +46,8 @@ class _NewMessagesState extends State<NewMessages> {
                   'text': _messages,
                   'createdAt': Timestamp.now(),
                   'userId': user.uid,
-                  'userName': userData['username']
+                  'userName': userData['username'],
+                  'imageUrl': userData['image_url']
                 });
                 _msgController.clear();
               },
